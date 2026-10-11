@@ -4,6 +4,7 @@ on:
   push:
     branches: [ main, ram-512mb-v2026-01-17 ]
     tags: [ 'v*' ]
+  workflow_dispatch:
 
 jobs:
   build:
@@ -28,6 +29,7 @@ jobs:
           "./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-nokia_g240g-e-squashfs-tclinux.trx"
           "./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-en751221_generic-initramfs-kernel.bin"
           "./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-zyxel_pmg5617ga-squashfs-tclinux.trx"
+          "./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-zyxel_pmg5617ga-squashfs-tclinux.trx"
           "./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-chinamobile_gs3101-squashfs-sysupgrade.bin"
           "./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-chinamobile_gs3101-squashfs-tclinux.trx"
         )
@@ -49,17 +51,17 @@ jobs:
           exit 1
         fi
 
-    - name: Run device tests
-      run: ./test.sh
-      env:
-        PASSWORD: ${{ secrets.TEST_PASSWORD }}
-
-    - name: Upload build artifacts
+    - name: Upload RAM512 test image
       uses: actions/upload-artifact@v4
       with:
         name: openwrt-en751221-ram512-v2026-01-17
         path: ./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-en751221_generic-initramfs-kernel.bin
         if-no-files-found: error
+
+    - name: Run device tests
+      run: ./test.sh
+      env:
+        PASSWORD: ${{ secrets.TEST_PASSWORD }}
 
     - name: Create Release and Upload Assets
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/v') && steps.check_files.outputs.files_exist == 'true'
