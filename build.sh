@@ -63,6 +63,7 @@ CONFIG_PACKAGE_kmod-usb-common=y
 CONFIG_PACKAGE_kmod-usb-core=y
 CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
 CONFIG_PACKAGE_kmod-usb-storage=y
+CONFIG_PACKAGE_nand-utils=y
 CONFIG_PACKAGE_libatomic=y
 CONFIG_PACKAGE_libpthread=y
 CONFIG_PACKAGE_librt=y
@@ -80,4 +81,3 @@ make "-j$(nproc)"
 # We need to do this for now because otherwise the binaries are unfindable
 cd ./bin/targets/econet/en751221
 ls | sed -n -e 's/openwrt-snapshot-\(.*\)-econet-\(.*\)/mv openwrt-snapshot-\1-econet-\2 openwrt-econet-\2/p' | sh
-
