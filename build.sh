@@ -1,4 +1,5 @@
 #!/bin/sh
+set -eu
 
 REPO=https://github.com/cjdelisle/openwrt.git
 HASH=ba9f212b567ee1cda360ba1fdb98629862ec974b
@@ -7,9 +8,16 @@ rm -rf ./openwrt
 mkdir openwrt
 cd openwrt
 git init
-git remote add origin $REPO
-git fetch --depth 1 origin $HASH
-git checkout $HASH
+git remote add origin "$REPO"
+git fetch --depth 1 origin "$HASH"
+git checkout "$HASH"
+
+# The G-1425-MA has 256 MiB RAM. Adjust only the generic board's memory nodes.
+DTS=target/linux/econet/dts/en751221_generic.dts
+sed -i 's/reg = <0x00000000 0x4000000>;/reg = <0x00000000 0x10000000>;/' "$DTS"
+sed -i 's/linux,usable-memory-range = <0x00020000 0x3fe0000>;/linux,usable-memory-range = <0x00020000 0x0ffe0000>;/' "$DTS"
+grep -q 'reg = <0x00000000 0x10000000>;' "$DTS"
+grep -q 'linux,usable-memory-range = <0x00020000 0x0ffe0000>;' "$DTS"
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
@@ -39,6 +47,7 @@ CONFIG_FEED_routing=y
 CONFIG_FEED_telephony=y
 CONFIG_FEED_video=y
 CONFIG_IMAGEOPT=y
+CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_kmod-crypto-sha256=y
 CONFIG_PACKAGE_kmod-econet-eth=y
 CONFIG_PACKAGE_kmod-fs-ext4=y
@@ -57,22 +66,28 @@ CONFIG_PACKAGE_kmod-usb-common=y
 CONFIG_PACKAGE_kmod-usb-core=y
 CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
 CONFIG_PACKAGE_kmod-usb-storage=y
+CONFIG_PACKAGE_kmod-mac80211=y
+CONFIG_PACKAGE_kmod-mt76-core=y
+CONFIG_PACKAGE_kmod-mt7603=y
+CONFIG_PACKAGE_kmod-mt76x02-common=y
+CONFIG_PACKAGE_kmod-mt76x2-common=y
+CONFIG_PACKAGE_kmod-mt76x2=y
+CONFIG_PACKAGE_mt76-firmware=y
+CONFIG_PACKAGE_iw=y
+CONFIG_PACKAGE_wpad-basic-mbedtls=y
 CONFIG_PACKAGE_nand-utils=y
 CONFIG_PACKAGE_libatomic=y
 CONFIG_PACKAGE_libpthread=y
 CONFIG_PACKAGE_librt=y
 CONFIG_PACKAGE_libstdcpp=y
 CONFIG_PACKAGE_r8152-firmware=y
-CONFIG_PACKAGE_wpad-basic-mbedtls=y
 CONFIG_TARGET_INITRAMFS_COMPRESSION_NONE=y
 CONFIG_TARGET_ROOTFS_INITRAMFS=y
 ' > .config
 
 make defconfig
+make "-j$(nproc)" V=s
 
-make "-j$(nproc)"
-
-# We need to do this for now because otherwise the binaries are unfindable
+# Rename generated images to the stable naming convention used by this repo.
 cd ./bin/targets/econet/en751221
 ls | sed -n -e 's/openwrt-snapshot-\(.*\)-econet-\(.*\)/mv openwrt-snapshot-\1-econet-\2 openwrt-econet-\2/p' | sh
-
