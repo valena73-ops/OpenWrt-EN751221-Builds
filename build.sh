@@ -67,6 +67,7 @@ CONFIG_PACKAGE_libatomic=y
 CONFIG_PACKAGE_libpthread=y
 CONFIG_PACKAGE_librt=y
 CONFIG_PACKAGE_libstdcpp=y
+CONFIG_PACKAGE_luci=y
 CONFIG_PACKAGE_r8152-firmware=y
 CONFIG_PACKAGE_wpad-basic-mbedtls=y
 CONFIG_TARGET_INITRAMFS_COMPRESSION_NONE=y
@@ -79,4 +80,4 @@ make "-j$(nproc)"
 
 # We need to do this for now because otherwise the binaries are unfindable
 cd ./bin/targets/econet/en751221
-ls | sed -n -e 's/openwrt-snapshot-\(.*\)-econet-\(.*\)/mv openwrt-snapshot-\1-econet-\2 openwrt-econet-\2/p' | sh
+ls | sed -n -e 's/openwrt-snapshot-\(.*\)-econet-\(.*\)/mv openwrt-snapshot-\1-econet-\2/p' | sh
