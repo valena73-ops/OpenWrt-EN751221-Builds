@@ -11,6 +11,12 @@ git remote add origin $REPO
 git fetch --depth 1 origin $HASH
 git checkout $HASH
 
+# EN751221 boards in this project can have 512MB DDR3.
+# The generic DTS defaults to a 64MB memory map, so expand it
+# before the kernel is built.
+sed -i 's/0x4000000/0x20000000/' target/linux/econet/dts/en751221_generic.dts
+sed -i 's/0x3fe0000/0x1ffe0000/' target/linux/econet/dts/en751221_generic.dts
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
@@ -57,7 +63,6 @@ CONFIG_PACKAGE_kmod-usb-common=y
 CONFIG_PACKAGE_kmod-usb-core=y
 CONFIG_PACKAGE_kmod-usb-net-rtl8152=y
 CONFIG_PACKAGE_kmod-usb-storage=y
-CONFIG_PACKAGE_nand-utils=y
 CONFIG_PACKAGE_libatomic=y
 CONFIG_PACKAGE_libpthread=y
 CONFIG_PACKAGE_librt=y
