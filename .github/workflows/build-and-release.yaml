@@ -2,7 +2,7 @@ name: Build and Release
 
 on:
   push:
-    branches: [ main, ram-512mb-v2026-01-17 ]
+    branches: [ main, ram-512mb-v2026-01-17, ram-256mb-v2026-01-17 ]
     tags: [ 'v*' ]
   workflow_dispatch:
 
@@ -51,10 +51,10 @@ jobs:
           exit 1
         fi
 
-    - name: Upload RAM512 test image
+    - name: Upload RAM256 test image
       uses: actions/upload-artifact@v4
       with:
-        name: openwrt-en751221-ram512-v2026-01-17
+        name: openwrt-en751221-ram256-v2026-01-17
         path: ./openwrt/bin/targets/econet/en751221/openwrt-econet-en751221-en751221_generic-initramfs-kernel.bin
         if-no-files-found: error
 
