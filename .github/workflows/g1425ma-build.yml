@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: g1425ma-ram256-wifi-experimental
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-24.04
