@@ -19,6 +19,21 @@ sed -i 's/linux,usable-memory-range = <0x00020000 0x3fe0000>;/linux,usable-memor
 grep -q 'reg = <0x00000000 0x10000000>;' "$DTS"
 grep -q 'linux,usable-memory-range = <0x00020000 0x0ffe0000>;' "$DTS"
 
+# Experimental PCIe enablement to let the mt7603/mt76x2 drivers probe the radios.
+# No synthetic Wi-Fi calibration is copied from another board.
+cat >> "$DTS" <<'EOF'
+
+&pcie0 {
+	status = "okay";
+	econet,en751221-port0-quirks;
+	econet,en751221-scu = <&scuclk>;
+};
+
+&pcie1 {
+	status = "okay";
+};
+EOF
+
 ./scripts/feeds update -a
 ./scripts/feeds install -a
 
@@ -86,6 +101,11 @@ CONFIG_TARGET_ROOTFS_INITRAMFS=y
 ' > .config
 
 make defconfig
+# The pinned econet source has no ported GPON/xPON MAC + optical-front-end
+# driver for this generic board. Do not pretend an unrelated board's optical
+# GPIO/calibration is safe; GPON remains disabled pending hardware identification.
+echo "NOTE: GPON/xPON driver is not enabled in this RAM test image; see build log."
+
 make "-j$(nproc)" V=s
 
 # Rename generated images to the stable naming convention used by this repo.
