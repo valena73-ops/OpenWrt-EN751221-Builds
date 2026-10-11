@@ -11,11 +11,10 @@ git remote add origin $REPO
 git fetch --depth 1 origin $HASH
 git checkout $HASH
 
-# EN751221 boards in this project can have 512MB DDR3.
-# The generic DTS defaults to a 64MB memory map, so expand it
-# before the kernel is built.
-sed -i 's/0x4000000/0x20000000/' target/linux/econet/dts/en751221_generic.dts
-sed -i 's/0x3fe0000/0x1ffe0000/' target/linux/econet/dts/en751221_generic.dts
+# EN751221 board RAM test: expose 256MiB to Linux.
+# The generic DTS defaults to 64MiB; use a 256MiB memory map.
+sed -i 's/0x4000000/0x10000000/' target/linux/econet/dts/en751221_generic.dts
+sed -i 's/0x3fe0000/0x0ffe0000/' target/linux/econet/dts/en751221_generic.dts
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
