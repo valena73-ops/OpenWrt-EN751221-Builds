@@ -96,17 +96,21 @@ CONFIG_PACKAGE_libpthread=y
 CONFIG_PACKAGE_librt=y
 CONFIG_PACKAGE_libstdcpp=y
 CONFIG_PACKAGE_r8152-firmware=y
-CONFIG_TARGET_INITRAMFS_COMPRESSION_NONE=y
-CONFIG_TARGET_ROOTFS_INITRAMFS=y
+CONFIG_TARGET_ROOTFS_SQUASHFS=y
+# CONFIG_TARGET_ROOTFS_INITRAMFS is not set
 ' > .config
 
 make defconfig
-# The pinned econet source has no ported GPON/xPON MAC + optical-front-end
-# driver for this generic board. Do not pretend an unrelated board's optical
-# GPIO/calibration is safe; GPON remains disabled pending hardware identification.
+# This build targets persistent SquashFS/TCLinux flash images, not initramfs.
+# The pinned source has no ported GPON/xPON MAC + optical-front-end driver
+# for Nokia G-1425-MA; optical service is not claimed to work in this build.
 echo "NOTE: GPON/xPON driver is not enabled in this RAM test image; see build log."
 
 make "-j$(nproc)" V=s
+
+# Require the persistent TCLinux image that the device rescue page can accept.
+test -s ./bin/targets/econet/en751221/openwrt-econet-en751221-nokia_g240g-e-squashfs-tclinux.trx
+sha256sum ./bin/targets/econet/en751221/openwrt-econet-en751221-nokia_g240g-e-squashfs-tclinux.trx
 
 # Rename generated images to the stable naming convention used by this repo.
 cd ./bin/targets/econet/en751221
