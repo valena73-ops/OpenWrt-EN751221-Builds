@@ -104,7 +104,7 @@ make defconfig
 # This build targets persistent SquashFS/TCLinux flash images, not initramfs.
 # The pinned source has no ported GPON/xPON MAC + optical-front-end driver
 # for Nokia G-1425-MA; optical service is not claimed to work in this build.
-echo "NOTE: GPON/xPON driver is not enabled in this RAM test image; see build log."
+echo "NOTE: GPON/xPON driver is not available in this build; optical service is not enabled."
 
 make "-j$(nproc)" V=s
 
